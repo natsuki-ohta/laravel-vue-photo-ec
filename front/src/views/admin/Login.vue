@@ -1,34 +1,34 @@
 <script setup>
-  import { ref } from 'vue'
-  import axios from '../../libs/axios'
-  import { useRouter } from 'vue-router'
-  
-  const email = ref('admin@example.com')
-  const password = ref('')
-  const error = ref('')
-  const loading = ref(false)
-  const router = useRouter()
-  
-  const handleLogin = async () => {
-    error.value = ''
-    loading.value = true
-  
-    try {
-      await axios.get('/sanctum/csrf-cookie', {
-        baseURL: '',
-      })
-      await axios.post('/login', {
-        email: email.value,
-        password: password.value,
-      })
-      router.push('/admin')
-    } catch {
-      error.value = 'メールアドレスまたはパスワードが正しくありません'
-    } finally {
-      loading.value = false
-    }
+import { ref } from 'vue'
+import axios from '../../libs/axios'
+import { useRouter } from 'vue-router'
+
+const email = ref('admin@example.com')
+const password = ref('')
+const error = ref('')
+const loading = ref(false)
+const router = useRouter()
+
+const handleLogin = async () => {
+  error.value = ''
+  loading.value = true
+
+  try {
+    await axios.get('/sanctum/csrf-cookie', {
+      baseURL: '/',
+    })
+    await axios.post('/login', {
+      email: email.value,
+      password: password.value,
+    })
+    router.push('/admin')
+  } catch {
+    error.value = 'メールアドレスまたはパスワードが正しくありません'
+  } finally {
+    loading.value = false
   }
-  </script>
+}
+</script>
 
 <template>
   <div class="login-wrapper">
