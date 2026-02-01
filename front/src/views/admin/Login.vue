@@ -15,13 +15,16 @@ const handleLogin = async () => {
 
   try {
     await axios.get('/sanctum/csrf-cookie', {
-      baseURL: '',
+      baseURL: '/',
       withCredentials: true,
     })
 
-    await axios.post('/login', {
+    await axios.post('/api/login', {
       email: email.value,
       password: password.value,
+    }, {
+      baseURL: '/', 
+      withCredentials: true, 
     })
 
     router.push('/admin')
