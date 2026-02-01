@@ -73,16 +73,19 @@ const router = createRouter({
 管理画面は未ログイン時にログインへリダイレクト
 */
 router.beforeEach(async (to) => {
-  const requiresAuth = to.matched.some(
-    route => route.meta.requiresAuth
-  )
-
+  const requiresAuth = to.matched.some(route => route.meta.requiresAuth)
   if (!requiresAuth) return true
 
+  const token = localStorage.getItem('token')
+  if (!token) return { name: 'AdminLogin' }
+
   try {
-    await axios.get('/admin/me')
+    await axios.get('/admin/me', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
     return true
   } catch {
+    localStorage.removeItem('token') 
     return { name: 'AdminLogin' }
   }
 })

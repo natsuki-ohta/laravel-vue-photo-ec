@@ -5,8 +5,16 @@
   const router = useRouter()
   
   const logout = async () => {
-    await axios.post('/api/logout')
-    router.push('/admin/login')
+    const token = localStorage.getItem('token')
+    try {
+      if (token) {
+        await axios.post('/api/logout', {}, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+      }
+    } catch {}
+    localStorage.removeItem('token')
+    router.push({ name: 'AdminLogin' })
   }
 </script>
 

@@ -40,7 +40,7 @@ Laravel と Vue を用いた、実際に使われているような EC サイト
 ### バックエンド
 - Laravel
 - MySQL
-- Laravel Sanctum（認証）
+- Laravel Sanctum（APIトークン認証のみ使用、CSRFやセッションは簡略化しています）
 
 ### フロントエンド
 - Vue 3- 
@@ -48,7 +48,7 @@ Laravel と Vue を用いた、実際に使われているような EC サイト
 
 ### インフラ / その他
 - Nginx
-- VPS（Linux）
+- Linux
 - GitHub
 
 ---

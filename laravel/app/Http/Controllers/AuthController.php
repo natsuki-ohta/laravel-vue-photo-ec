@@ -4,39 +4,38 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    /**
-     * ログイン処理
-     */
     public function login(Request $request)
     {
-        $credentials = $request->only('email', 'password');
-
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-
-            return response()->json([
-                'message' => 'login ok'
-            ]);
+        $user = User::where('email', $request->email)->first();
+    
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'login failed'], 401);
         }
-
+    
+        $token = $user->createToken('api-token')->plainTextToken;
+    
         return response()->json([
-            'message' => 'login failed'
-        ], 401);
+            'message' => 'login ok',
+            'token' => $token,
+        ]);
     }
-
-    /**
-     * ログアウト処理
-     */
+    
     public function logout(Request $request)
     {
-        Auth::logout();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
+        $token = $request->bearerToken();
+    
+        if ($token) {
+            $accessToken = \Laravel\Sanctum\PersonalAccessToken::findToken($token);
+            if ($accessToken) {
+                $accessToken->delete();
+            }
+        }
+    
         return response()->json([
             'message' => 'logged out'
         ]);

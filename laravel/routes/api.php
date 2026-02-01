@@ -21,18 +21,7 @@ Route::get('/products', [ProductController::class, 'index']);
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::post('/order/store', [OrderController::class, 'store']);
 
-// Route::middleware([
-//   EnsureFrontendRequestsAreStateful::class,
-//   'web',
-// ])->group(function () {
-//   Route::post('/login', [AuthController::class, 'login']);
-//   Route::post('/logout', [AuthController::class, 'logout']);
-// });
-
-Route::prefix('api')->middleware([
-  EnsureFrontendRequestsAreStateful::class,
-  'web',
-])->group(function () {
+Route::prefix('api')->group(function () {
   Route::post('/login', [AuthController::class, 'login']);
   Route::post('/logout', [AuthController::class, 'logout']);
 });
@@ -57,14 +46,26 @@ Route::prefix('admin')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Auth (Sanctum)
+| Auth 
 |--------------------------------------------------------------------------
 */
 
-Route::middleware([
-    EnsureFrontendRequestsAreStateful::class,
-    'auth:sanctum',
-])->get('/admin/me', function (Request $request) {
-    return $request->user();
-});
+Route::get('/admin/me', function (Request $request) {
+  $token = $request->bearerToken(); 
 
+  if (!$token) {
+      return response()->json(['message' => 'Unauthorized'], 401);
+  }
+
+  $user = \Laravel\Sanctum\PersonalAccessToken::findToken($token)?->tokenable;
+
+  if (!$user) {
+      return response()->json(['message' => 'Unauthorized'], 401);
+  }
+
+  return response()->json([
+      'id' => $user->id,
+      'name' => $user->name,
+      'email' => $user->email,
+  ]);
+});
