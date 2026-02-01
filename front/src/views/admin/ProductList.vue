@@ -2,7 +2,7 @@
   import { ref, onMounted } from "vue";
   import { api } from "../../libs/api";
   import { useToast } from 'vue-toast-notification';
-  
+  import { nextTick } from 'vue'
   const toast = useToast();
   
   const categories = ref([]);
@@ -35,18 +35,55 @@
     product.imageFile = file;
     product.imagePreview = URL.createObjectURL(file);
   };
-  
+
+  const MAX_SIZE = 5 * 1024 * 1024
+  const ALLOWED_TYPES = ['image/jpeg', 'image/png']
+
   const updateImage = async (product) => {
-    const formData = new FormData();
-    formData.append('image', product.imageFile);
-    formData.append('product_id', product.id);
-  
-    const res = await api.post(`/admin/products/${product.id}/image`, formData);
-    product.image_path = res.data.image_path;
-    product.imagePreview = null;
-    product.imageFile = null;
-  };
-  
+    if (!product.imageFile) return
+
+    const file = product.imageFile
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      toast.error('画像は jpg または png 形式のみアップロード可能です')
+      return
+    }
+
+    if (file.size > MAX_SIZE) {
+      toast.error('画像サイズは5MB以内にしてください')
+      return
+    }
+
+    const formData = new FormData()
+    formData.append('image', file)
+    formData.append('product_id', product.id)
+
+    try {
+      const res = await api.post(
+        `/admin/products/${product.id}/image`,
+        formData
+      )
+
+      product.image_path = res.data.image_path
+
+      if (product.imagePreview) {
+        URL.revokeObjectURL(product.imagePreview)
+      }
+      product.imagePreview = null
+      product.imageFile = null
+
+    } catch (err) {
+      if (err.response?.status === 422) {
+        toast.error(
+          err.response.data.errors?.image?.[0]
+          ?? '画像の形式またはサイズが不正です'
+        )
+      } else {
+        toast.error('画像の更新に失敗しました')
+      }
+    }
+  }
+
   const fetchProducts = async () => {
     const params = {};
     if (selectedCategory.value) {
@@ -161,8 +198,7 @@
   
     await fetchProducts();
   });
-  </script>
-  
+</script>
   
 <template>
   <div class="header">
@@ -276,8 +312,6 @@
     </div>
   </div>
 
-
-
   <table class="table">
     <thead>
       <tr>
@@ -292,7 +326,7 @@
     <tbody>
         <tr
           v-for="product in products"
-          :key="product.id ?? product._tempId"
+          :key="product.id"
           :class="{ new: product.isNew }"
         >
         <td>
@@ -303,9 +337,10 @@
             />
 
             <label class="image-edit">
-              変更
+              ファイルを選択
               <input
                 type="file"
+                accept="image/*"
                 hidden
                 @change="onImageChange($event, product)"
               />

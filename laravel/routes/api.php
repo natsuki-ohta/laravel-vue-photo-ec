@@ -21,7 +21,6 @@ Route::get('/products', [ProductController::class, 'index']);
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::post('/order/store', [OrderController::class, 'store']);
 
-
 Route::middleware([
   EnsureFrontendRequestsAreStateful::class,
   'web',
@@ -47,7 +46,6 @@ Route::prefix('admin')->group(function () {
     Route::get('/order', [AdminOrderController::class, 'index']);
     Route::get('/order/{order}', [AdminOrderController::class, 'show']);
 });
-
 
 /*
 |--------------------------------------------------------------------------

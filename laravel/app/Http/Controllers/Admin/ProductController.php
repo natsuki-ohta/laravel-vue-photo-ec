@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ProductResource;
+use App\Http\Requests\UpdateProductImageRequest;
 
 class ProductController extends Controller
 {
@@ -71,19 +72,32 @@ class ProductController extends Controller
     /**
      * 管理画面：商品画像更新
      */
-    public function updateImage(Request $request)
+    public function updateImage(UpdateProductImageRequest $request)
     {
-        $product = Product::findOrFail($request->product_id);
+        try {
+            $product = Product::findOrFail($request->product_id);
+            $path = $request->file('image')->store('products', 'public');
+            $product->update([
+                'image_path' => Storage::url($path),
+            ]);
 
-        $path = $request->file('image')->store('products', 'public');
-
-        $product->update([
-            'image_path' => Storage::url($path),
-        ]);
-
-        return response()->json([
-            'image_path' => $product->image_path,
-        ]);
+            return response()->json([
+                'message' => '商品画像を更新しました。',
+                'data' => [
+                    'image_path' => $product->image_path,
+                ],
+            ], 200);
+            
+        } catch (\Throwable $e) {
+            Log::error('商品画像更新失敗', [
+                'product_id' => $request->product_id,
+                'error' => $e->getMessage(),
+            ]);
+    
+            return response()->json([
+                'message' => '画像の更新に失敗しました。',
+            ], 500);
+        }
     }
 
     /**
