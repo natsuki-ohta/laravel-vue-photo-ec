@@ -1,6 +1,8 @@
 ## URL
 - Demo  
   http://163.44.118.25  
+  (管理画面ログインアカウント)
+  ID/PASS:admin@example.com:password
 
 - GitHub  
   https://github.com/natsuki-ohta/laravel-vue-photo-ec
