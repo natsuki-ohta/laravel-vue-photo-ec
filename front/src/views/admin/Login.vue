@@ -15,12 +15,15 @@ const handleLogin = async () => {
 
   try {
     await axios.get('/sanctum/csrf-cookie', {
-      baseURL: '/',
+      baseURL: '',
+      withCredentials: true,
     })
+
     await axios.post('/login', {
       email: email.value,
       password: password.value,
     })
+
     router.push('/admin')
   } catch {
     error.value = 'メールアドレスまたはパスワードが正しくありません'
