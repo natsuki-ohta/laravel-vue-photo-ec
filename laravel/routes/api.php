@@ -21,7 +21,15 @@ Route::get('/products', [ProductController::class, 'index']);
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::post('/order/store', [OrderController::class, 'store']);
 
-Route::middleware([
+// Route::middleware([
+//   EnsureFrontendRequestsAreStateful::class,
+//   'web',
+// ])->group(function () {
+//   Route::post('/login', [AuthController::class, 'login']);
+//   Route::post('/logout', [AuthController::class, 'logout']);
+// });
+
+Route::prefix('api')->middleware([
   EnsureFrontendRequestsAreStateful::class,
   'web',
 ])->group(function () {

@@ -23,7 +23,6 @@ const handleLogin = async () => {
       email: email.value,
       password: password.value,
     }, {
-      baseURL: '/', 
       withCredentials: true, 
     })
 
