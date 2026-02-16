@@ -51,7 +51,7 @@ const handleLogin = async () => {
         <input
           v-model="password"
           type="password"
-          placeholder="password"
+          placeholder=""
           required
         />
       </div>
