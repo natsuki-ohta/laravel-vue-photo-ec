@@ -15,7 +15,13 @@
         <h2>管理画面ログインへ</h2>
         <p>商品管理・在庫管理・注文確認</p>
       </router-link>
+
+      <router-link to="/python" class="menu-card">
+        <h2>Python / Django</h2>
+        <p>地図機能・API連携デモ</p>
+      </router-link>
     </div>
+    
   </div>
 </template>
 

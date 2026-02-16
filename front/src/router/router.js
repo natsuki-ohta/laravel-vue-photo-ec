@@ -62,6 +62,12 @@ const routes = [
       },
     ],
   },
+
+  {
+    path: '/python',
+    name: 'Python',
+    component: () => import('../views/Python.vue'),
+  },
 ]
 
 const router = createRouter({
