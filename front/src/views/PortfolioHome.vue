@@ -17,7 +17,7 @@
       </router-link>
 
       <router-link to="/python" class="menu-card">
-        <h2>Python / Django (準備中)</h2>
+        <h2>Python / Django </h2>
         <p>地図機能・API連携デモ</p>
       </router-link>
     </div>
